@@ -9,7 +9,7 @@ describe('AuthController', () => {
   let service: AuthService;
   const userModel: Model<User> = {} as Model<User>;
   const token = 'token';
-  const loginDto = {
+  const mockUser = {
     email: 'mock@email.com',
     password: 'mockPassword'
   };
@@ -26,7 +26,7 @@ describe('AuthController', () => {
   describe('logIn', () => {
     it('should return a token', async () => {
       jest.spyOn(service, 'logIn').mockResolvedValue({ token });
-      expect(await controller.login(loginDto)).toEqual({ token });
+      expect(await controller.login(mockUser)).toEqual({ token });
     });
   });
 });
