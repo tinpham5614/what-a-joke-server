@@ -103,28 +103,14 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException if password does not match', async () => {
-      const newMockUser: SignUpDto = {
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'johndoe@gmail.com',
-        password: 'password',
-        confirmPassword: 'password123',
-      };
       try {
-        await service.signUp(newMockUser);
+        await service.signUp({ ...newMockUser, confirmPassword: 'invalid_password'});
       } catch (error) {
         expect(error.message).toEqual('Passwords do not match');
       }
     });
 
     it('should throw UnauthorizedException if user already exists', async () => {
-      const newMockUser: SignUpDto = {
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'johndoe12@gmail.com',
-        password: 'password',
-        confirmPassword: 'password',
-      };
       jest.spyOn(userModel, 'findOne').mockReturnValueOnce({
         exec: jest.fn().mockResolvedValue(newMockUser),
       } as any);
