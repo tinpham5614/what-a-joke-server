@@ -1,26 +1,30 @@
 import {
-  IsEmpty,
-  IsString,
-  IsNotEmpty,
+  IsBoolean,
   IsDate,
+  IsEmpty,
+  IsNotEmpty,
   IsNumber,
+  IsString,
 } from 'class-validator';
 import { User } from 'src/users/schema/user.schema';
 
 export class UpdateJokeDto {
   @IsEmpty()
-  createdBy: User;
+  readonly createdBy: User;
 
   @IsString()
   @IsNotEmpty()
-  joke: string;
+  readonly joke: string;
 
   @IsNumber()
-  favoriteCount: number;
+  readonly favoriteCount: number;
 
   @IsDate()
-  createdAt: Date;
+  readonly createdAt: Date;
 
   @IsDate()
-  updatedAt: Date;
+  readonly updatedAt: Date;
+
+  @IsBoolean()
+  readonly isDeleted: boolean;
 }
