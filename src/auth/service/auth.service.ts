@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from '../dto/login.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from '../../users/schema/user.schema';
+import { User, UserRole } from '../../users/schema/user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -55,6 +55,7 @@ export class AuthService {
       lastName,
       email,
       password: hashedPassword,
+      role: UserRole.USER,
     });
 
     // create token
