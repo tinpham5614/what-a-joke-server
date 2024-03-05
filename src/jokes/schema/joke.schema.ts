@@ -1,4 +1,4 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { User } from 'src/users/schema/user.schema';
 import mongoose from 'mongoose';
 
@@ -27,3 +27,5 @@ export class Joke {
   @Prop({ default: false })
   isDeleted: boolean;
 }
+
+export const JokeSchema = SchemaFactory.createForClass(Joke);
