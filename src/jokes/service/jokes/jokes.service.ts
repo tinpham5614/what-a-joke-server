@@ -32,20 +32,30 @@ export class JokesService {
   // create a new joke
   async createJoke(joke: Joke, user: User): Promise<Joke> {
     try {
-      joke.createdBy = user;
-      return await this.jokeModel.create(joke);
+      const newJoke = new this.jokeModel(joke, { createdByser: user._id });
+      return await this.jokeModel.create(newJoke);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
 
   // update a joke by id
-  async updateJokeById(id: string, joke: Joke): Promise<Joke> {
+  async updateJokeById(id: string, joke: Joke, user: User): Promise<Joke> {
     const isValidJokeId = mongoose.isValidObjectId(id);
     if (!isValidJokeId) {
       throw new BadRequestException('Invalid joke id');
     }
-    return await this.jokeModel.findByIdAndUpdate(id, joke, { new: true });
+    const updatedJoke = await this.jokeModel
+      .findByIdAndUpdate(id, joke, {
+        new: true,
+        runValidatetors: true,
+        updatedByUser: user._id,
+      })
+      .exec();
+    if (!updatedJoke || updatedJoke.isDeleted || updatedJoke === null) {
+      throw new BadRequestException('Joke {id} not found');
+    }
+    return updatedJoke;
   }
 
   // delete a joke by id
@@ -55,10 +65,20 @@ export class JokesService {
       throw new BadRequestException('Invalid joke id');
     }
     // find joke by id and update isDeleted to true
-    return await this.jokeModel.findByIdAndUpdate(
-      id,
-      { isDeleted: true },
-      { new: true },
-    );
+    const deletedJoke = await this.jokeModel
+      .findByIdAndUpdate(
+        id,
+        {
+          isDeleted: true,
+        },
+        {
+          new: true,
+        },
+      )
+      .exec();
+    if (!deletedJoke || deletedJoke === null) {
+      throw new BadRequestException('Joke {id} not found');
+    }
+    return deletedJoke;
   }
 }

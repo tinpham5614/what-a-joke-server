@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
 import { JokesService } from '../service/jokes/jokes.service';
 import { Joke } from '../schema/joke.schema';
 import { User } from 'src/users/schema/user.schema';
@@ -21,14 +21,18 @@ export class JokesController {
 
   // create a new joke
   @Post('create')
-  async createJoke(@Body() joke: Joke, user: User): Promise<Joke> {
-    return await this.jokesService.createJoke(joke, user);
+  async createJoke(@Body() joke: Joke, @Req() req): Promise<Joke> {
+    return await this.jokesService.createJoke(joke, req.user.id as User);
   }
 
   // update a joke by id
   @Put('update/:id')
-  async updateJokeById(@Body() joke: Joke, id: string): Promise<Joke> {
-    return await this.jokesService.updateJokeById(id, joke);
+  async updateJokeById(@Body() joke: Joke, id: string, @Req() req) {
+    return await this.jokesService.updateJokeById(
+      id,
+      joke,
+      req.user.id as User,
+    );
   }
 
   // delete a joke by id
