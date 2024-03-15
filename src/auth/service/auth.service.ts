@@ -28,8 +28,8 @@ export class AuthService {
     }
 
     const token = this.jwtService.sign({
+      id: user._id,
       email: user.email,
-      sub: user._id,
     });
 
     return { token, userRole: user.role };
@@ -62,8 +62,8 @@ export class AuthService {
 
     // create token
     const token = this.jwtService.sign({
+      id: newUser._id,
       email: newUser.email,
-      sub: newUser._id,
     });
 
     return { token };
