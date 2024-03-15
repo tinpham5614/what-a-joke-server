@@ -1,29 +1,29 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+
 export enum Role {
-    ADMIN = 'admin',
-    USER = 'user',
+  ADMIN = 'admin',
+  USER = 'user',
 }
 
 @Schema({
-    timestamps: true,
+  timestamps: true,
 })
-
 export class User extends Document {
-    @Prop()
-    firstName: string;
+  @Prop()
+  firstName: string;
 
-    @Prop()
-    lastName: string;
+  @Prop()
+  lastName: string;
 
-    @Prop({ unique: [true, 'Email already exists'] })
-    email: string;
+  @Prop({ unique: [true, 'Email already exists'] })
+  email: string;
 
-    @Prop()
-    password: string;
+  @Prop()
+  password: string;
 
-    @Prop()
-    role: Role;
+  @Prop()
+  role: Role;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

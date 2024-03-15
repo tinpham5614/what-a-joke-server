@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from '../dto/login.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserRole } from '../../users/schema/user.schema';
+import { User } from '../../users/schema/user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -36,12 +36,14 @@ export class AuthService {
   }
 
   async signUp(signUpDto: SignUpDto) {
-    const { firstName, lastName, email, password, confirmPassword } = signUpDto;
+    const { firstName, lastName, email, password, confirmPassword, role } =
+      signUpDto;
     if (password !== confirmPassword) {
       throw new UnauthorizedException('Passwords do not match');
     }
     // hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     //find if user exists
     const user = await this.userModel.findOne({ email });
@@ -55,7 +57,7 @@ export class AuthService {
       lastName,
       email,
       password: hashedPassword,
-      role: UserRole.USER,
+      role,
     });
 
     // create token

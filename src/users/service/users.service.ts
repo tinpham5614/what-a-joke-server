@@ -25,4 +25,16 @@ export class UsersService {
       role: user.role,
     } as User;
   }
+
+  // update user by id
+  async updateUserById(id: string, user: User): Promise<User> {
+    const updatedUser = await this.userModel.findByIdAndUpdate(id, user, {
+      new: true,
+      runValidators: true,
+    });
+    if (!updatedUser) {
+      throw new NotFoundException('Could not find user.');
+    }
+    return updatedUser;
+  }
 }
