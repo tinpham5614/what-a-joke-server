@@ -32,7 +32,7 @@ export class AuthService {
       sub: user._id,
     });
 
-    return { token };
+    return { token, userRole: user.role };
   }
 
   async signUp(signUpDto: SignUpDto) {
