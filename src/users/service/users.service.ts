@@ -17,6 +17,12 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('Could not find user.');
     }
-    return user as User;
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+    } as User;
   }
 }
