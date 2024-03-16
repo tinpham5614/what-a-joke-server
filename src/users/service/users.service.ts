@@ -8,7 +8,7 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async findUserById(id: string): Promise<User> {
-    let user : User;
+    let user: User;
     try {
       user = await this.userModel.findById(id).exec();
     } catch (error) {
@@ -28,13 +28,24 @@ export class UsersService {
 
   // update user by id
   async updateUserById(id: string, user: User): Promise<User> {
-    const updatedUser = await this.userModel.findByIdAndUpdate(id, user, {
-      new: true,
-      runValidators: true,
-    });
+    let updatedUser: User;
+    try {
+      updatedUser = await this.userModel.findByIdAndUpdate(id, user, {
+        new: true,
+        runValidators: true,
+      });
+    } catch (error) {
+      throw new NotFoundException('Could not find user.');
+    }
     if (!updatedUser) {
       throw new NotFoundException('Could not find user.');
     }
-    return updatedUser;
+    return {
+      id: updatedUser.id,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      email: updatedUser.email,
+      role: updatedUser.role,
+    } as User;
   }
 }
