@@ -1,16 +1,16 @@
 import {
   IsBoolean,
-  IsDate,
   IsEmpty,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
 } from 'class-validator';
 import { User } from 'src/users/schema/user.schema';
 
 export class UpdateJokeDto {
-  @IsEmpty()
-  readonly createdBy: User;
+  @IsEmpty({message: 'ID field is not required'})
+  readonly createdByUser: User;
 
   @IsString()
   @IsNotEmpty()
@@ -19,12 +19,7 @@ export class UpdateJokeDto {
   @IsNumber()
   readonly favoriteCount: number;
 
-  @IsDate()
-  readonly createdAt: Date;
-
-  @IsDate()
-  readonly updatedAt: Date;
-
+  @IsOptional()
   @IsBoolean()
   readonly isDeleted: boolean;
 }

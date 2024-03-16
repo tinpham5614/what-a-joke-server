@@ -4,25 +4,20 @@ import mongoose from 'mongoose';
 
 @Schema({
   timestamps: true,
+  collection: 'jokes',
 })
 export class Joke {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   })
-  createdBy: User;
+  createdByUser: User;
 
   @Prop({ required: true })
   joke: string;
 
   @Prop({ default: 0 })
   favoriteCount: number;
-
-  @Prop({ default: Date.now })
-  createdAt: Date;
-
-  @Prop({ default: Date.now })
-  updatedAt: Date;
 
   @Prop({ default: false })
   isDeleted: boolean;

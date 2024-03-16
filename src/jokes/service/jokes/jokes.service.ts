@@ -4,6 +4,7 @@ import { Joke } from 'src/jokes/schema/joke.schema';
 import { Model } from 'mongoose';
 import mongoose from 'mongoose';
 import { User } from 'src/users/schema/user.schema';
+import { CreateJokeDto } from 'src/jokes/dto/create-joke.dto';
 
 @Injectable()
 export class JokesService {
@@ -30,13 +31,9 @@ export class JokesService {
     return await this.jokeModel.findById(id);
   }
   // create a new joke
-  async createJoke(joke: Joke, user: User): Promise<Joke> {
-    try {
-      const newJoke = new this.jokeModel(joke, { createdByser: user._id });
-      return await this.jokeModel.create(newJoke);
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+  async createJoke(joke: CreateJokeDto, user: User): Promise<Joke> {
+    const newJoke =  Object.assign(joke, { createdByUser: user });
+    return await this.jokeModel.create(newJoke);
   }
 
   // update a joke by id

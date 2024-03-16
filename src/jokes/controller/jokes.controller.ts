@@ -1,7 +1,10 @@
-import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { JokesService } from '../service/jokes/jokes.service';
 import { Joke } from '../schema/joke.schema';
 import { User } from 'src/users/schema/user.schema';
+import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
+import { RoleGuard } from 'src/auth/guard/role.guard';
+import { CreateJokeDto } from '../dto/create-joke.dto';
 
 @Controller('jokes')
 export class JokesController {
@@ -20,9 +23,10 @@ export class JokesController {
   }
 
   // create a new joke
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @Post('create')
-  async createJoke(@Body() joke: Joke, @Req() req): Promise<Joke> {
-    return await this.jokesService.createJoke(joke, req.user.id as User);
+  async createJoke(@Body() newJoke: CreateJokeDto, @Req() req): Promise<Joke> {
+    return await this.jokesService.createJoke(newJoke as Joke, req.user.id as User);
   }
 
   // update a joke by id
