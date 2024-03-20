@@ -35,6 +35,12 @@ export class JokesController {
     return await this.jokesService.getJokeById(id);
   }
 
+  // get jokes by user id
+  @Get('user/:userId')
+  async getJokesByUserId(@Param('userId') userId: string) {
+    return await this.jokesService.getJokesByUserId(userId);
+  }
+
   // create a new joke
   @Roles(Role.ADMIN, Role.USER)
   @UseGuards(JwtAuthGuard, RoleGuard)

@@ -28,7 +28,25 @@ export class JokesService {
     if (!isValidJokeId) {
       throw new BadRequestException('Invalid joke id');
     }
-    return await this.jokeModel.findById(id);
+    const joke = await this.jokeModel.findById(id);
+    if (!joke || joke === null) {
+      throw new BadRequestException(`Joke ${id} not found`);
+    }
+    return joke;
+  }
+
+  // get jokes by user id
+  async getJokesByUserId(userId: string): Promise<Joke[]> {
+    const isValidUserId = mongoose.isValidObjectId(userId);
+    if (!isValidUserId) {
+      throw new BadRequestException('Invalid user id');
+    }
+    const jokes = await this.jokeModel.find({ createdByUser: userId });
+    if (!jokes || jokes === null) {
+      throw new BadRequestException(`Jokes created by user ${userId} not found`);
+    }
+    return jokes;
+    
   }
   // create a new joke
   async createJoke(
@@ -38,6 +56,9 @@ export class JokesService {
     const newJoke = Object.assign(joke, { createdByUser: user });
     const createdJoke = new this.jokeModel(newJoke);
     await createdJoke.save();
+    if (!createdJoke || createdJoke === null) {
+      throw new BadRequestException('Joke not created');
+    }
     return {
       newJoke: createdJoke,
       message: 'Joke created successfully',
@@ -55,7 +76,7 @@ export class JokesService {
       throw new BadRequestException('Invalid joke id');
     }
 
-    if (user.role !== Role.ADMIN && joke.createdByUser.toString() !== user.id) {
+    if (user.role !== Role.ADMIN && joke.createdByUser !== user.id) {
       throw new UnauthorizedException(
         'You are not authorized to update this joke',
       );
@@ -74,7 +95,7 @@ export class JokesService {
       )
       .exec();
     if (!updatedJoke || updatedJoke === null) {
-      throw new BadRequestException('Joke {id} not found');
+      throw new BadRequestException(`Joke ${id} not found`);
     }
     return {
       updatedJoke,
@@ -102,7 +123,7 @@ export class JokesService {
       )
       .exec();
     if (!deletedJoke || deletedJoke === null) {
-      throw new BadRequestException('Joke {id} not found');
+      throw new BadRequestException(`Joke ${id} not found`);
     }
     return deletedJoke;
   }
