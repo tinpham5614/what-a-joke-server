@@ -53,10 +53,10 @@ export class JokesController {
   @Roles(Role.ADMIN, Role.USER)
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Put('update/:id')
-  async updateJoke(@Param('id') id: string, @Body() jokeDto: UpdateJokeDto, @GetUser() user: User) {
+  async updateJoke(@Param('id') id: string, @Body() updateJoke: UpdateJokeDto, @GetUser() user: User) {
     return await this.jokesService.updateJoke(
       id,
-      jokeDto as Joke,
+      updateJoke as Joke,
       user.id as User,
     );
   }

@@ -1,9 +1,9 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Joke } from 'src/jokes/schema/joke.schema';
 import { Model } from 'mongoose';
 import mongoose from 'mongoose';
-import { Role, User } from 'src/users/schema/user.schema';
+import { User } from 'src/users/schema/user.schema';
 import { CreateJokeDto } from 'src/jokes/dto/create-joke.dto';
 
 @Injectable()
@@ -43,10 +43,11 @@ export class JokesService {
     }
     const jokes = await this.jokeModel.find({ createdByUser: userId });
     if (!jokes || jokes === null) {
-      throw new BadRequestException(`Jokes created by user ${userId} not found`);
+      throw new BadRequestException(
+        `Jokes created by user ${userId} not found`,
+      );
     }
     return jokes;
-    
   }
   // create a new joke
   async createJoke(
@@ -75,13 +76,6 @@ export class JokesService {
     if (!isValidJokeId) {
       throw new BadRequestException('Invalid joke id');
     }
-
-    if (user.role !== Role.ADMIN && joke.createdByUser !== user.id) {
-      throw new UnauthorizedException(
-        'You are not authorized to update this joke',
-      );
-    }
-
     const updatedJoke = await this.jokeModel
       .findByIdAndUpdate(
         id,
