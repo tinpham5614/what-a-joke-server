@@ -1,14 +1,27 @@
-import { Body, Controller, Delete, Get, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { JokesService } from '../service/jokes/jokes.service';
 import { Joke } from '../schema/joke.schema';
-import { User } from 'src/users/schema/user.schema';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { RoleGuard } from 'src/auth/guard/role.guard';
 import { CreateJokeDto } from '../dto/create-joke.dto';
+import { GetUser } from '../../auth/decorator/user.decorator';
+import { UpdateJokeDto } from '../dto/update-joke.dto';
+import { Roles } from 'src/auth/decorator/roles.decorator';
+import { Role, User } from 'src/users/schema/user.schema';
 
 @Controller('jokes')
 export class JokesController {
-  constructor(private readonly jokesService: JokesService) {}
+  constructor(@Inject(JokesService) private jokesService: JokesService) {}
 
   // get all jokes sorted by createdAt
   @Get('')
@@ -17,31 +30,34 @@ export class JokesController {
   }
 
   // get a joke by id
-  @Get(':id')
-  async getJokeById(id: string): Promise<Joke> {
+  @Get('find/:id')
+  async getJokeById(@Param('id') id: string) {
     return await this.jokesService.getJokeById(id);
   }
 
   // create a new joke
+  @Roles(Role.ADMIN, Role.USER)
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Post('create')
-  async createJoke(@Body() newJoke: CreateJokeDto, @Req() req): Promise<Joke> {
-    return await this.jokesService.createJoke(newJoke as Joke, req.user.id as User);
+  async createJoke(@Body() newJoke: CreateJokeDto, @GetUser() user: User) {
+    return await this.jokesService.createJoke(newJoke as Joke, user.id as User);
   }
 
   // update a joke by id
+  @Roles(Role.ADMIN, Role.USER)
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @Put('update/:id')
-  async updateJokeById(@Body() joke: Joke, id: string, @Req() req) {
-    return await this.jokesService.updateJokeById(
+  async updateJoke(@Param('id') id: string, @Body() jokeDto: UpdateJokeDto, @GetUser() user: User) {
+    return await this.jokesService.updateJoke(
       id,
-      joke,
-      req.user.id as User,
+      jokeDto as Joke,
+      user.id as User,
     );
   }
 
   // delete a joke by id
   @Delete('delete/:id')
-  async deleteJokeById(id: string): Promise<Joke> {
-    return await this.jokesService.deleteJokeById(id);
+  async deleteJokeById(@Param('id') id: string, @GetUser() user: User) {
+    return await this.jokesService.deleteJokeById(id, user.id as User);
   }
 }

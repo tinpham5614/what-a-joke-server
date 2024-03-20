@@ -1,21 +1,19 @@
-import {
-  IsBoolean,
-  IsEmpty,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsBoolean, IsEmpty, IsNumber, IsOptional } from 'class-validator';
 import { User } from 'src/users/schema/user.schema';
 
 export class UpdateJokeDto {
-  @IsEmpty({message: 'ID field is not required'})
+  @IsOptional()
+  @IsEmpty({ message: 'ID field is not required' })
   readonly createdByUser: User;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsOptional()
+  @IsEmpty({ message: 'ID field is not required' })
+  readonly updatedByUser: User;
+
+  @IsOptional()
   readonly joke: string;
 
+  @IsOptional()
   @IsNumber()
   readonly favoriteCount: number;
 

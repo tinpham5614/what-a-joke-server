@@ -1,9 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Joke } from 'src/jokes/schema/joke.schema';
 import { Model } from 'mongoose';
 import mongoose from 'mongoose';
-import { User } from 'src/users/schema/user.schema';
+import { Role, User } from 'src/users/schema/user.schema';
 import { CreateJokeDto } from 'src/jokes/dto/create-joke.dto';
 
 @Injectable()
@@ -31,32 +31,59 @@ export class JokesService {
     return await this.jokeModel.findById(id);
   }
   // create a new joke
-  async createJoke(joke: CreateJokeDto, user: User): Promise<Joke> {
-    const newJoke =  Object.assign(joke, { createdByUser: user });
-    return await this.jokeModel.create(newJoke);
+  async createJoke(
+    joke: CreateJokeDto,
+    user: User,
+  ): Promise<{ newJoke: Joke; message: string }> {
+    const newJoke = Object.assign(joke, { createdByUser: user });
+    const createdJoke = new this.jokeModel(newJoke);
+    await createdJoke.save();
+    return {
+      newJoke: createdJoke,
+      message: 'Joke created successfully',
+    };
   }
 
   // update a joke by id
-  async updateJokeById(id: string, joke: Joke, user: User): Promise<Joke> {
+  async updateJoke(
+    id: string,
+    joke: Joke,
+    user: User,
+  ): Promise<{ updatedJoke: Joke; message: string }> {
     const isValidJokeId = mongoose.isValidObjectId(id);
     if (!isValidJokeId) {
       throw new BadRequestException('Invalid joke id');
     }
+
+    if (user.role !== Role.ADMIN && joke.createdByUser.toString() !== user.id) {
+      throw new UnauthorizedException(
+        'You are not authorized to update this joke',
+      );
+    }
+
     const updatedJoke = await this.jokeModel
-      .findByIdAndUpdate(id, joke, {
-        new: true,
-        runValidatetors: true,
-        updatedByUser: user._id,
-      })
+      .findByIdAndUpdate(
+        id,
+        {
+          ...joke,
+          updatedByUser: user,
+        },
+        {
+          new: true,
+        },
+      )
       .exec();
-    if (!updatedJoke || updatedJoke.isDeleted || updatedJoke === null) {
+    if (!updatedJoke || updatedJoke === null) {
       throw new BadRequestException('Joke {id} not found');
     }
-    return updatedJoke;
+    return {
+      updatedJoke,
+      message: 'Joke updated successfully',
+    };
   }
 
   // delete a joke by id
-  async deleteJokeById(id: string): Promise<Joke> {
+  async deleteJokeById(id: string, user: User): Promise<Joke> {
     const isValidJokeId = mongoose.isValidObjectId(id);
     if (!isValidJokeId) {
       throw new BadRequestException('Invalid joke id');
@@ -67,6 +94,7 @@ export class JokesService {
         id,
         {
           isDeleted: true,
+          updatedByUser: user,
         },
         {
           new: true,
