@@ -16,6 +16,7 @@ export class CreateJokeDto {
   @IsNotEmpty()
   readonly joke: string;
 
+  @IsOptional()
   @IsNumber()
   readonly favoriteCount: number;
 
