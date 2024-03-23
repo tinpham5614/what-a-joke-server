@@ -12,7 +12,7 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
   ) {}
-
+  // log in user
   async logIn(loginDto: LoginDto) {
     const { email, password } = loginDto;
     const user = await this.userModel.findOne({ email });
@@ -32,9 +32,9 @@ export class AuthService {
       email: user.email,
     });
 
-    return { token, userRole: user.role };
+    return { token, subRole: user.role, sub: user._id};
   }
-
+  // sign up user
   async signUp(signUpDto: SignUpDto) {
     const { firstName, lastName, email, password, confirmPassword } = signUpDto;
     if (password !== confirmPassword) {
