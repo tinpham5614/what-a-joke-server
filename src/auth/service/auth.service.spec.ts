@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { Model } from 'mongoose';
-import { User } from '../../users/schema/user.schema';
+import { Role, User } from '../../users/schema/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { getModelToken } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
@@ -41,6 +41,7 @@ describe('AuthService', () => {
       _id: '1234567890ab',
       email: 'mockEmail',
       password: bcrypt.hash('mockPassword', 10),
+      role: Role.USER,
     } as User;
 
     it('should return a token', async () => {
@@ -86,6 +87,7 @@ describe('AuthService', () => {
       email: 'johndoe@gmail.com',
       password: 'password',
       confirmPassword: 'password',
+      role: Role.USER,
     };
 
     const hashedPassword = bcrypt.hash(newMockUser.password, 10);
@@ -99,7 +101,7 @@ describe('AuthService', () => {
       jest.spyOn(jwtService, 'sign').mockReturnValue(mockToken);
 
       const result = await service.signUp(newMockUser);
-      expect(result).toEqual({ token: mockToken });
+      expect(result).toEqual({ token: mockToken, userRole: newMockUser.role });
     });
 
     it('should throw UnauthorizedException if password does not match', async () => {
