@@ -1,22 +1,22 @@
-import { IsEmail, IsEmpty, IsNotEmpty } from "class-validator";
+import { IsEmail, IsEmpty, IsNotEmpty } from 'class-validator';
 import { Role } from '../../users/schema/user.schema';
 export class SignUpDto {
-    @IsEmpty()
-    readonly firstName: string;
+  @IsEmpty()
+  readonly firstName: string;
 
-    @IsEmpty()
-    readonly lastName: string;
+  @IsEmpty()
+  readonly lastName: string;
 
-    @IsNotEmpty()
-    @IsEmail()
-    readonly email: string;
+  @IsNotEmpty()
+  @IsEmail()
+  readonly email: string;
 
-    @IsNotEmpty()
-    readonly password: string;
+  @IsNotEmpty()
+  readonly password: string;
 
-    @IsNotEmpty()
-    readonly confirmPassword: string;
+  @IsNotEmpty()
+  readonly confirmPassword: string;
 
-    @IsEmpty()
-    readonly role: Role;
+  @IsEmpty()
+  readonly role: Role;
 }

@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { LoginDto } from '../dto/login.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Role, User } from '../../users/schema/user.schema';
@@ -6,6 +10,8 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from '../dto/signup.dto';
+import { ChangePasswordDto } from '../dto/changepassword.dto';
+import { GetUser } from '../decorator/user.decorator';
 @Injectable()
 export class AuthService {
   constructor(
@@ -32,7 +38,7 @@ export class AuthService {
       email: user.email,
     });
 
-    return { token, subRole: user.role, sub: user._id};
+    return { token, subRole: user.role, sub: user._id };
   }
   // sign up user
   async signUp(signUpDto: SignUpDto) {
@@ -65,6 +71,56 @@ export class AuthService {
       email: newUser.email,
     });
 
-    return { token, userRole: newUser.role};
+    return { token, userRole: newUser.role };
+  }
+
+  async changePassword(
+    changePasswordDto: ChangePasswordDto,
+    @GetUser() user: User,
+  ) {
+    const { currentPassword, newPassword, confirmNewPassword } =
+      changePasswordDto;
+
+    // get user information
+    const userEmail = user.email;
+    const userPassword = user.password;
+
+    // compare current password with user password
+    const isValidPassword = await bcrypt.compare(currentPassword, userPassword);
+    if (!isValidPassword) {
+      throw new HttpException('Incorrect Password', 400);
+    }
+
+    // check if new password and confirm password match
+    if (newPassword != confirmNewPassword) {
+      throw new HttpException('Password do not match', 400);
+    }
+
+    // hash new password
+    const saltNumber = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltNumber);
+
+    // compare new password with the current password
+    const isSamePassword = await bcrypt.compare(
+      currentPassword,
+      hashedPassword,
+    );
+    if (isSamePassword) {
+      throw new HttpException(
+        'New password cannot be the same as current password',
+        400,
+      );
+    }
+
+    // update user password
+    await this.userModel.updateOne(
+      {
+        email: userEmail,
+      },
+      {
+        password: hashedPassword,
+      },
+    );
+    return { message: 'Password changed successfully' };
   }
 }
