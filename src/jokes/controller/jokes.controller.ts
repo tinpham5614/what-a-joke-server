@@ -9,15 +9,15 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { JokesService } from '../service/jokes/jokes.service';
+import { JokesService } from '../service/jokes.service';
 import { Joke } from '../schema/joke.schema';
-import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
-import { RoleGuard } from 'src/auth/guard/role.guard';
+import { JwtAuthGuard } from '../../auth/guard/jwt.guard';
+import { RoleGuard } from '../../auth/guard/role.guard';
 import { CreateJokeDto } from '../dto/create-joke.dto';
 import { GetUser } from '../../auth/decorator/user.decorator';
 import { UpdateJokeDto } from '../dto/update-joke.dto';
-import { Roles } from 'src/auth/decorator/roles.decorator';
-import { Role, User } from 'src/users/schema/user.schema';
+import { Roles } from '../../auth/decorator/roles.decorator';
+import { Role, User } from '../../users/schema/user.schema';
 
 @Controller('jokes')
 export class JokesController {

@@ -4,7 +4,7 @@ import { LoginDto } from '../dto/login.dto';
 import { SignUpDto } from '../dto/signup.dto';
 import { ChangePasswordDto } from '../dto/changepassword.dto';
 import { GetUser } from '../decorator/user.decorator';
-import { User } from 'src/users/schema/user.schema';
+import { User } from '../../users/schema/user.schema';
 import { JwtAuthGuard } from '../guard/jwt.guard';
 import { RoleGuard } from '../guard/role.guard';
 
