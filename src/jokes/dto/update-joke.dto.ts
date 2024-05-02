@@ -1,5 +1,5 @@
 import { IsBoolean, IsEmpty, IsNumber, IsOptional } from 'class-validator';
-import { User } from 'src/users/schema/user.schema';
+import { User } from '../../users/schema/user.schema';
 
 export class UpdateJokeDto {
   @IsOptional()

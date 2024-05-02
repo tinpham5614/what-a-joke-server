@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Joke } from 'src/jokes/schema/joke.schema';
+import { Joke } from '../schema/joke.schema';
 import { Model } from 'mongoose';
 import mongoose from 'mongoose';
-import { User } from 'src/users/schema/user.schema';
-import { CreateJokeDto } from 'src/jokes/dto/create-joke.dto';
+import { User } from '../../users/schema/user.schema';
+import { CreateJokeDto } from '../dto/create-joke.dto';
 
 @Injectable()
 export class JokesService {
