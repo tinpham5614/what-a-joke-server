@@ -12,14 +12,13 @@ export class JokesService {
 
   // get all jokes sorted by createdAt
   async getAllJokes(): Promise<Joke[]> {
-    const limitPerPage = 10;
-    const currentPage = 1;
-    const skip = (currentPage - 1) * limitPerPage;
-    return await this.jokeModel
-      .find()
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limitPerPage);
+    const jokes = (await this.jokeModel.find().sort({ createdAt: -1 })).filter(
+      (joke) => joke.isDeleted === false,
+    );
+    if (!jokes || jokes === null) {
+      throw new BadRequestException('Jokes not found');
+    }
+    return jokes;
   }
 
   // get a joke by id
@@ -41,7 +40,9 @@ export class JokesService {
     if (!isValidUserId) {
       throw new BadRequestException('Invalid user id');
     }
-    const jokes = await this.jokeModel.find({ createdByUser: userId });
+    const jokes = (await this.jokeModel.find({ createdByUser: userId })).filter(
+      (joke) => joke.isDeleted === false,
+    );
     if (!jokes || jokes === null) {
       throw new BadRequestException(
         `Jokes created by user ${userId} not found`,
