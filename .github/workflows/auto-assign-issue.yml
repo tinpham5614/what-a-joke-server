@@ -1,23 +1,17 @@
-name: Auto-assign issues and pull requests
+name: Auto-assign Issue
 
 on:
   issues:
-    types:
-      - opened
-  pull_request:
-    types:
-      - opened
+    types: [opened]
+
+permissions:
+  issues: write
 
 jobs:
-  run:
+  auto-assign:
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      pull-requests: write
     steps:
-      - name: Assign issues and pull requests
-        uses: gustavofreze/auto-assign@1.0.0
+      - uses: pozil/auto-assign-issue@v1
         with:
-          assignees: 'tinpham5614'
-          github_token: '${{ secrets.AUTO_ASSIGN_ISSUE_TOKEN }}'
-          assignment_options: 'ISSUE,PULL_REQUEST'
+          github-token: ${{ secrets.AUTO_ASSIGN_ISSUE_TOKEN }}
+          assignees: ${{ github.actor }}
