@@ -3,6 +3,8 @@ name: Auto-assign Issue
 on:
   issues:
     types: [opened]
+  pull_request:
+    types: [opened]
 
 permissions:
   issues: write
